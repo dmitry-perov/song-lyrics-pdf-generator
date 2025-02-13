@@ -1,3 +1,4 @@
+import os
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase.ttfonts import TTFont
@@ -49,7 +50,36 @@ def main():
     translations = read_file('track.txt')
     transcriptions = read_file('track.ipa')
 
-    create_pdf(title, artist, lyrics, translations, transcriptions, 'output.pdf')
+    create_pdf(title, artist, lyrics, translations, transcriptions, 'track.pdf')
+
+def proc_dir(text_path, tranlsation_path, transcription_path, output_path, artist, title):
+    
+    lyrics = read_file(text_path)
+    translations = read_file(tranlsation_path)
+    transcriptions = read_file(transcription_path)
+
+    create_pdf(title, artist, lyrics, translations, transcriptions, output_path)
+
+    pass
+
+
+def proc_all_dirs(path = "C:\\Projects\\YandexMusic\\data"):
+    for root, dirs, files in os.walk(path):
+        #if 'track.pdf' in files:
+        #    continue;
+        #if 'ok' in files:
+        #    continue;
+        files_set = ["track.fr", "track.txt", "track.ipa"]
+        if set(files_set).issubset(files):
+            print(f'proc in {root}')
+            
+            path_parts = root.split(os.sep)
+            artist = path_parts[-2]
+            title = path_parts[-1]
+            files_set.append("track.pdf")
+            params = [os.path.join(root, f) for f in files_set]
+            proc_dir(*params, artist, title)
+    
 
 if __name__ == "__main__":
-    main()
+    proc_all_dirs()
