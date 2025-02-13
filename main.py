@@ -7,7 +7,7 @@ def read_file(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
         return file.readlines()
 
-def create_pdf(lyrics, translations, transcriptions, output_path):
+def create_pdf(title, artist, lyrics, translations, transcriptions, output_path):
     c = canvas.Canvas(output_path, pagesize=letter)
     width, height = letter
 
@@ -15,6 +15,11 @@ def create_pdf(lyrics, translations, transcriptions, output_path):
     pdfmetrics.registerFont(TTFont('Andika', 'Andika-Regular.ttf'))
 
     y_position = height - 40  # Start position from the top
+
+    # Add title and artist to the first page in one line
+    c.setFont("Andika", 16)
+    c.drawString(40, y_position, f"{artist.strip()} - {title.strip()}")
+    y_position -= 40  # Add some space before the lyrics
 
     for lyric, translation, transcription in zip(lyrics, translations, transcriptions):
         c.setFont("Andika", 12)
@@ -36,11 +41,15 @@ def create_pdf(lyrics, translations, transcriptions, output_path):
     c.save()
 
 def main():
+    title_data = read_file('title.txt')
+    title = title_data[1]
+    artist = title_data[0]
+
     lyrics = read_file('track.fr')
     translations = read_file('track.txt')
     transcriptions = read_file('track.ipa')
 
-    create_pdf(lyrics, translations, transcriptions, 'output.pdf')
+    create_pdf(title, artist, lyrics, translations, transcriptions, 'output.pdf')
 
 if __name__ == "__main__":
     main()
